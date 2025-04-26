@@ -13,16 +13,25 @@ A conta de origem podemos validar para quando transaction_type for igual a Depos
 Da mesma maneira, sempre que transaction_type for igual a Pagamento Impostos, account_destination será Governo Federal - Impostos.
 A coluna amount não pode nunca ser um valor menor que zero.
 Acho interessante apontar também sempre que a coluna currency for diferente de BRL.
-A coluna location penso em validar também o transaction_type "boleto", já que não da pra fazer um boleto online.
 A coluna description tem que ser, literalmente, a descrição da transação. Então, acho válido verificar se na descrição a transaction_type, account_origin e a account_destination estão presentes e no lugar certo. Não acho interessante validar a location na descrição, pois notei que é uma informação opcional nessa base de dados.
+Já quando estava desenvolvendo, também identifique que sempre que transaction_type == "Saque" account_destination == "Caixa Eletrônico". Decide validar isso também.
+Desenvolvendo, também decidi verificar se existe algum valor nulo.
 
 Com essa análise dos dados, acredito que, após apontar as inconsistências encontradas, consigo fazer uma análise consistente e que retrate a realidade dos fatos.
 
 2º Fase:
-Já fiz a primeira análise dos dados, agora vou começar a desenvolver essas validações. A essa altura, já criei o repositório no github e já ativei uma venv para centralizar as importações.
-Com o desenvolvimento, pretendo entregar um projeto que seja capaz:
+Já fiz a primeira análise dos dados, agora vou pensar em como quero desenvolver o projeto e o que eu quero que ele faça. A essa altura, já criei o repositório no github e já ativei uma venv para centralizar as importações.
+Com o desenvolvimento, pretendo entregar um projeto que seja capaz de:
     - abrir e ler os arquivos '.csv' enviados;
     - iterar sobre cada linha do arquivo e verificar se ela não se encaixa em nenhuma das inconsistências identificadas (uma linha pode ser pega em mais de uma inconsistência);
     - montar, para cada arquivo, um arquivo com as inconsistências encontradas para que o usuário as análise;
     - se o usuário desejar, gerar um novo arquivo sem as inconsistências;
     - realizar a análise sumária dos dados remanescentes.
+
+Vou usar a lib do pandas para desenvolver esse projeto.
+
+3º Fase:
+Depois de decidir o que fazer e como fazer, comecei a desenvolver de fato o projeto. 
+Comecei lendo o arquivo, e já iterando sobre suas linhas. Depois parti para verificar as incosistências pensadas.
+Até essa parte (2º commit) não encontrei nenhuma dificuldade. Já conhecia bastante o pandas e a lógica dos ifs. Apenas consultei a biblioteca do pandas (https://pandas.pydata.org/docs) e pedi ao chatgpt pra me ajudar a encontrar um jeito de verificar se os campos estão nulos e quais campos. O chat me deu a ideia de criar uma lista com os campos e iterar sobre a lista. Adaptei o código que ele me passou e deu super certo.
+
