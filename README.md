@@ -34,4 +34,6 @@ Vou usar a lib do pandas para desenvolver esse projeto.
 Depois de decidir o que fazer e como fazer, comecei a desenvolver de fato o projeto. 
 Comecei lendo o arquivo, e já iterando sobre suas linhas. Depois parti para verificar as incosistências pensadas.
 Até essa parte (2º commit) não encontrei nenhuma dificuldade. Já conhecia bastante o pandas e a lógica dos ifs. Apenas consultei a biblioteca do pandas (https://pandas.pydata.org/docs) e pedi ao chatgpt pra me ajudar a encontrar um jeito de verificar se os campos estão nulos e quais campos. O chat me deu a ideia de criar uma lista com os campos e iterar sobre a lista. Adaptei o código que ele me passou e deu super certo.
+Depois de aplicar as verificações no código, voltei tratando algumas partes, como a leitura do arquivo, para deixar o código mais robusto, menos propicio a erro e mais escalonável.
+Desenvolvi a lógica de criar o arquivo com as inconsistências. Pensei em criar uma lista que vai conter todas as inconsistências, e pra cada inconsistência eu crio uma outra lista que vai compor a maior, que mais tarde vai ser transformada em uma planilha. Aqui eu precisei de ajuda para pegar apenas o nome do arquivo, desconhecia o metodo basename, do os. Uma simples busca na web já me ajudou.
 
