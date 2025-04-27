@@ -38,3 +38,14 @@ Até essa parte (2º commit) não encontrei nenhuma dificuldade. Já conhecia ba
 Depois de aplicar as verificações no código, voltei tratando algumas partes, como a leitura do arquivo, para deixar o código mais robusto, menos propicio a erro e mais escalonável.
 Desenvolvi a lógica de criar o arquivo com as inconsistências. Pensei em criar uma lista que vai conter todas as inconsistências, e pra cada inconsistência eu crio uma outra lista que vai compor a maior, que mais tarde vai ser transformada em uma planilha. Aqui eu precisei de ajuda para pegar apenas o nome do arquivo, desconhecia o metodo basename, do os. Uma simples busca na web já me ajudou.
 
+4º Fase:
+Para analisar o arquivo, primeiro tenho que decidir quais as métricas que vou utilizar. São elas:
+    - Total de transações por dia (quantidade e valor);
+    - Total de transações por tipo (quantidade, valor e percentual);
+    - Total de transações por localidade (quantidade e percentual);
+    - Conta que mais/menos originou transações (filtro por quantidade, mostrando valor);
+    - Conta que mais/menos recebeu transações (filtro por quantidade, mostrando valor);
+    - Operações (combinação de conta origem e destino);
+    - Operações (combinação de conta origem e tipo);
+    - Operações (combinado de conta destino e tipo)
+

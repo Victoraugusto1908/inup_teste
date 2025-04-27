@@ -2,6 +2,169 @@ import pandas as pd
 from time import sleep
 import os
 
+
+class analise():
+    """
+        - Total de transações por dia (quantidade e valor);
+        - Total de transações por tipo (quantidade, valor e percentual);
+        - Total de transações por localidade (quantidade e percentual);
+        - Conta que mais/menos originou transações (filtro por quantidade, mostrando valor);
+        - Conta que mais/menos recebeu transações (filtro por quantidade, mostrando valor);
+        - Operações (combinação de conta origem e destino);
+        - Operações (combinação de conta origem e tipo);
+        - Operações (combinado de conta destino e tipo)
+    """
+
+    # Total de transações por dia (quantidade e valor)
+    def transaction_for_day(df):
+        try:
+            df['timestamp'] = pd.to_datetime(df['timestamp'], errors="coerce")
+            # Total de transações por dia (quantidade e valor)
+            resultado = df.groupby(df['timestamp'].dt.to_period('D')).agg(
+                transacoes = ('transaction_id', 'count'),
+                valor_total = ('amount', 'sum'),
+                media = ('amount', 'mean')
+            ).reset_index()
+
+            resultado['valor_total'] = resultado['valor_total'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+            resultado['media'] = resultado['media'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+            result = resultado.sort_values('timestamp')
+            return result
+        
+        except Exception as e:
+            print(f"Não foi possível analisar as transações diárias: {e}")
+
+    # Total de transações por tipo (quantidade, valor e percentual)
+    def transaction_for_type(df):
+        try:
+            resultado = df.groupby(df['transaction_type']).agg(
+                transacoes = ('transaction_id', 'count'),
+                valor_total = ('amount', 'sum'),
+                media = ("amount", 'mean')
+            ).reset_index()
+
+            resultado['porcentagem'] = (resultado['transacoes'] / resultado['transacoes'].sum()) * 100
+            resultado['porcentagem'] = resultado['porcentagem'].apply(lambda x: f"{x:.2f}%")
+            resultado['valor_total'] = resultado['valor_total'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+            resultado['media'] = resultado['media'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+            result = resultado.sort_values('transacoes')
+            return result
+
+        except Exception as e:
+            print(f"Não foi possível analisar as transações por tipo: {e}")
+
+    # Total de transações por localidade (quantidade e percentual)
+    def transaction_for_location(df):
+        try:
+            resultado = df.groupby(df['location']).agg(
+                transacoes = ('transaction_id', 'count'),
+                valor_total = ('amount', 'sum'),
+                media = ('amount', 'mean')
+            ).reset_index()
+
+            resultado['porcentagem'] = (resultado['transacoes'] / resultado['transacoes'].sum()) * 100
+            resultado['porcentagem'] = resultado['porcentagem'].apply(lambda x: f"{x:.2f}%")
+            resultado['valor_total'] = resultado['valor_total'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+            resultado['media'] = resultado['media'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+            result = resultado.sort_values('transacoes')
+            return result
+
+        except Exception as e:
+            print(f"Não foi possível analisar as transações por local: {e}")
+
+    # Conta que mais/menos originou transações (filtro por quantidade, mostrando valor)
+    def transaction_for_origin(df):
+        try:
+            resultado = df.groupby(df['account_origin']).agg(
+                transacoes = ('transaction_id', 'count'),
+                valor_total = ('amount', 'sum'),
+                media = ('amount', 'mean')
+            ).reset_index()
+
+            resultado['valor_total'] = resultado['valor_total'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+            resultado['media'] = resultado['media'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+            result = resultado.sort_values('transacoes')
+            return result
+
+        except Exception as e:
+            print(f"Não foi possível analisar as transações por conta de origem: {e}")
+
+    # Conta que mais/menos recebeu transações (filtro por quantidade, mostrando valor) 
+    def transaction_for_destination(df):
+        try:
+            resultado = df.groupby(df['account_destination']).agg(
+                transacoes = ('transaction_id', 'count'),
+                valor_total = ('amount', 'sum'),
+                media = ('amount', 'mean')
+            ).reset_index()
+
+            resultado['valor_total'] = resultado['valor_total'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+            resultado['media'] = resultado['media'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+            result = resultado.sort_values('transacoes')
+            return result
+
+        except Exception as e:
+            print(f"Não foi possível analisar as transações por conta de destino: {e}")
+
+    # Operações (combinação de conta origem e destino)
+    def combination_origin_destination(df):
+        try:
+            resultado = df.groupby([df['account_origin'], df['account_destination']]).agg(
+                transacoes = ('transaction_id', 'count'),
+                valor_total = ('amount', 'sum'),
+                media = ('amount', 'mean')
+            ).reset_index()
+
+            resultado['valor_total'] = resultado['valor_total'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+            resultado['media'] = resultado['media'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+            result = resultado.sort_values('transacoes')
+            return result
+
+        except Exception as e:
+            print(f"Não foi possível analisar as transações por combinação de conta de origem e destino: {e}")
+
+    # Operações (combinação de conta origem e tipo)
+    def combination_origin_type(df):
+        try:
+            resultado = df.groupby([df['account_origin'], df['transaction_type']]).agg(
+                transacoes = ('transaction_id', 'count'),
+                valor_total = ('amount', 'sum'),
+                media = ('amount', 'mean')
+            ).reset_index()
+
+            resultado['valor_total'] = resultado['valor_total'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+            resultado['media'] = resultado['media'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+            result = resultado.sort_values('transacoes')
+            return result
+
+        except Exception as e:
+            print(f"Não foi possível analisar as transações por combinação de conta de origem e tipo: {e}")
+
+    # Operações (combinado de conta destino e tipo)
+    def combination_destination_type(df):
+        try:
+            resultado = df.groupby([df['account_destination'], df['transaction_type']]).agg(
+                transacoes = ('transaction_id', 'count'),
+                valor_total = ('amount', 'sum'),
+                media = ('amount', 'mean')
+            ).reset_index()
+
+            resultado['valor_total'] = resultado['valor_total'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+            resultado['media'] = resultado['media'].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+            result = resultado.sort_values('transacoes')
+            return result
+
+        except Exception as e:
+            print(f"Não foi possível analisar as transações por combinação de conta de destino e tipo: {e}")
+
 """
     As inconsistências que listei foram então:
     
@@ -142,9 +305,13 @@ try:
                         booleano = int(input("Deseja remover as incosistências do arquivo original ? Responda com 1 para 'Sim' e 0 para 'Não': "))
                         if booleano == 1:
                             print("Retirando inconsistências do arquivo original...")
+                            ids = inconsistencias_df['transaction_id'].tolist()
+                            # filtrando o df com os ids das inconsistências
+                            df_filtrado = df[~df['transaction_id'].isin(ids)]
                             break
                         elif booleano == 0:
                             print("Faremos então a análise considerando as inconsistências....")
+                            df_filtrado = df
                             break
                         else:
                             print("Essa não é uma resposta válida, tente novamente.")
@@ -152,10 +319,38 @@ try:
                         print("Essa não é uma resposta válida, tente novamente.")
                 
                 # Fazendo a análise do arquivo
+                print("Analisando arquivo. Aguarde, esse processo pode demorar...")
+                transaction_day = analise.transaction_for_day(df_filtrado)
+                transaction_type = analise.transaction_for_type(df_filtrado)
+                transaction_location = analise.transaction_for_location(df_filtrado)
+                print("Aguarde mais um pouco, estamos terminando...")
+                transaction_origin = analise.transaction_for_origin(df_filtrado)
+                transaction_destinate = analise.transaction_for_destination(df_filtrado)
+                print("Apenas mais alguns instantes...")
+                combination = analise.combination_origin_destination(df_filtrado)
+                combination_origin = analise.combination_origin_type(df_filtrado)
+                combination_destination = analise.combination_destination_type(df_filtrado)
+                print("Análise finalizada! Criando arquivo com a análise...")
+
+                # Exportando o arquivo da análise
+                try:
+                    with pd.ExcelWriter(f"analise_{nome_arquivo}.xlsx", engine='xlsxwriter') as writer:
+                        transaction_day.to_excel(writer, sheet_name="Trans. dia", index=False)
+                        transaction_type.to_excel(writer, sheet_name="Trans. tipo", index=False)
+                        transaction_location.to_excel(writer, sheet_name="Trans. local", index=False)
+                        transaction_origin.to_excel(writer, sheet_name="Trans. origem", index=False)
+                        transaction_destinate.to_excel(writer, sheet_name="Trans. destino", index=False)
+                        combination.to_excel(writer, sheet_name="Combinação origem-destino", index=False)
+                        combination_origin.to_excel(writer, sheet_name="Combinação origem-tipo", index=False)
+                        combination_destination.to_excel(writer, sheet_name="Combinação destino-tipo", index=False)
+
+                        print("Arquivo com a análise criado.")
+                        print("Encerrando programa...")
+                except Exception as e:
+                    print(f"Não foi possível criar o arquivo com a análise feita: {e}")
 
         except Exception as e:
             print(f"Erro ao criar o arquivo de inconsistências: {e}.")
 
 except Exception as e:
     print(f"Erro ao verificar as colunas do arquivo: {e}. Tente com outro arquivo.")
-
