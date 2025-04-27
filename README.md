@@ -16,6 +16,7 @@ Acho interessante apontar também sempre que a coluna currency for diferente de 
 A coluna description tem que ser, literalmente, a descrição da transação. Então, acho válido verificar se na descrição a transaction_type, account_origin e a account_destination estão presentes e no lugar certo. Não acho interessante validar a location na descrição, pois notei que é uma informação opcional nessa base de dados.
 Já quando estava desenvolvendo, também identifique que sempre que transaction_type == "Saque" account_destination == "Caixa Eletrônico". Decide validar isso também.
 Desenvolvendo, também decidi verificar se existe algum valor nulo.
+Desenvolvendo, também identifiquei que Saque e Depósito não podem ser Online, e resolvi verificar também se existem transferências que utilizam a mesma conta como origem e destino.
 
 Com essa análise dos dados, acredito que, após apontar as inconsistências encontradas, consigo fazer uma análise consistente e que retrate a realidade dos fatos.
 

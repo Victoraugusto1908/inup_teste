@@ -5,12 +5,15 @@ import os
 """
     As inconsistências que listei foram então:
     
+    - Verificar se tem algum valor NULL na linha analisado
     - SE transaction_type == "Deposito" ENTÃO account_origin == "Caixa Eletronico/Guiche" 
     - SE transaction_type == "Saque" ENTÃO account_destination == "Caixa Eletronico"
     - SE transaction_type == "Pagamento Imposto" ENTÃO account_destination == "Governo Federal - Impostos"
+    - SE location == "Online" E transaction_type == "Saque" OU "Deposito"
     - SE amount <= 0
     - SE currency != "BRL"
     - SE account_origin E account_destination E transaction_type NOT IN description
+    - SE account_origin == account_destination
 """
 
 # Lendo os arquivos.
@@ -49,6 +52,7 @@ try:
                 valor = row['amount']
                 currency = row['currency']
                 transaction_type = row['transaction_type']
+                location = row["location"]
                 description = row['description']
 
                 # Verificando se há campos nulos
@@ -74,6 +78,11 @@ try:
                     print(f"Id: {id}; Transação: {transaction_type}; Conta de destino: {account_destination}")
                     inconsistencia = [id, "Transação Pagamento Imposto com conta de destino diferente de 'Governo Federal - Impostos'.", account_destination]
                     inconsistencias_list.append(inconsistencia)
+
+                if location == "Online" and transaction_type in ("Deposito", "Saque"):
+                    print(f"Id: {id}; Transação: {transaction_type}; Descrição: {description}")
+                    inconsistencia = [id, "Saque/Deposito feito de forma online, verificar.", f"Transação: {transaction_type} - Descrição: {description}"]
+                    inconsistencias_list.append(inconsistencia)
                 
                 if valor <= 0:
                     print(f"Id: {id}; Transação: {transaction_type}; Valor: {valor}")
@@ -83,6 +92,11 @@ try:
                 if currency != "BRL":
                     print(f"Id: {id}; Transação: {transaction_type}; Moeda: {currency}")
                     inconsistencia = [id, "Moeda diferente de 'BRL'.", f"Moeda: {currency} - Descrição: {description}"]
+                    inconsistencias_list.append(inconsistencia)
+
+                if account_destination == account_origin:
+                    print(f"Id: {id}; Descrição: {description}")
+                    inconsistencia = [id, "Conta de Destino igual a conta de Origem, verifique.", f"Descrição: {description}"]
                     inconsistencias_list.append(inconsistencia)
 
                 if transaction_type not in description and account_origin not in description and account_destination not in description:
@@ -119,7 +133,25 @@ try:
                     print(f"Erro ao criar o nome do arquivo: {e}. Usando 'inconsistencias' como padrão.")
                     nome_arquivo = 'inconsistencias'
                 inconsistencias_df.to_excel(f'{nome_arquivo}.xlsx', index=False)
-                print("Arquivo de inconsistências criado com sucesso!")
+                print("Arquivo de inconsistências criado com sucesso! Favor verificar as inconsistências encontradas.")
+                sleep(2)
+
+                # validando se o usuário deseja remover as inconsistências do arquivo original
+                while True:
+                    try:
+                        booleano = int(input("Deseja remover as incosistências do arquivo original ? Responda com 1 para 'Sim' e 0 para 'Não': "))
+                        if booleano == 1:
+                            print("Retirando inconsistências do arquivo original...")
+                            break
+                        elif booleano == 0:
+                            print("Faremos então a análise considerando as inconsistências....")
+                            break
+                        else:
+                            print("Essa não é uma resposta válida, tente novamente.")
+                    except Exception:
+                        print("Essa não é uma resposta válida, tente novamente.")
+                
+                # Fazendo a análise do arquivo
 
         except Exception as e:
             print(f"Erro ao criar o arquivo de inconsistências: {e}.")
