@@ -202,6 +202,7 @@ try:
     
     else:
         # Criando uma lista para armazenar as inconsistências
+        print("Verificando se há inconsistências. Aguarde, esse processo pode demorar um pouco...")
         inconsistencias_list = []
 
         # Iterando sobre as linhas
@@ -222,58 +223,47 @@ try:
                 campos = ['transaction_id', 'timestamp', 'account_origin', 'account_destination', 'amount', 'currency', 'transaction_type', 'location', 'description']
                 nulos = [campo for campo in campos if pd.isna(row[campo])]
                 if nulos:
-                    print(f"Id: {id}; Campos nulos: {nulos}")
                     inconsistencia = [id, "Há valores nulos na linha. Verifique", nulos]
                     inconsistencias_list.append(inconsistencia)
 
                 # Verificando inconsistências
                 if transaction_type == "Deposito" and account_origin != "Caixa Eletronico/Guiche":
-                    print(f"Id: {id}; Transação: {transaction_type}; Conta de origem: {account_origin}")
                     inconsistencia = [id, "Transação Deposito com conta de origem diferente de 'Caixa Eletronico/Guiche'.", account_origin]
                     inconsistencias_list.append(inconsistencia)
                 
                 if transaction_type == "Saque" and account_destination != "Caixa Eletronico":
-                    print(f"Id: {id}; Transação: {transaction_type}; Conta de destino: {account_destination}")
                     inconsistencia = [id, "Transação Saque com conta de destino diferente de 'Caixa Eletronico'.", account_destination]
                     inconsistencias_list.append(inconsistencia)
 
                 if transaction_type == "Pagamento Imposto" and account_destination != "Governo Federal - Impostos":
-                    print(f"Id: {id}; Transação: {transaction_type}; Conta de destino: {account_destination}")
                     inconsistencia = [id, "Transação Pagamento Imposto com conta de destino diferente de 'Governo Federal - Impostos'.", account_destination]
                     inconsistencias_list.append(inconsistencia)
 
                 if location == "Online" and transaction_type in ("Deposito", "Saque"):
-                    print(f"Id: {id}; Transação: {transaction_type}; Descrição: {description}")
                     inconsistencia = [id, "Saque/Deposito feito de forma online, verificar.", f"Transação: {transaction_type} - Descrição: {description}"]
                     inconsistencias_list.append(inconsistencia)
                 
                 if valor <= 0:
-                    print(f"Id: {id}; Transação: {transaction_type}; Valor: {valor}")
                     inconsistencia = [id, "Valor menor ou igual a zero.", f"Valor: {valor} - Descrição: {description}"]
                     inconsistencias_list.append(inconsistencia)
 
                 if currency != "BRL":
-                    print(f"Id: {id}; Transação: {transaction_type}; Moeda: {currency}")
                     inconsistencia = [id, "Moeda diferente de 'BRL'.", f"Moeda: {currency} - Descrição: {description}"]
                     inconsistencias_list.append(inconsistencia)
 
                 if account_destination == account_origin:
-                    print(f"Id: {id}; Descrição: {description}")
                     inconsistencia = [id, "Conta de Destino igual a conta de Origem, verifique.", f"Descrição: {description}"]
                     inconsistencias_list.append(inconsistencia)
 
                 if transaction_type not in description and account_origin not in description and account_destination not in description:
-                    print(f"Id: {id}; Transação: {transaction_type}; Conta de origem: {account_origin}; Conta de destino: {account_destination}; Descrição: {description}")
                     inconsistencia = [id, "Descrição da transação não condiz com os dados da transação. Verifique.", f"Transação: {transaction_type} - Conta de origem: {account_origin} - Conta de destino: {account_destination} - Descrição: {description}"]
                     inconsistencias_list.append(inconsistencia)
 
                 if f"de '{account_origin}'" not in description:
-                    print(f"Id: {id}; Conta de origem: {account_origin}; Descrição: {description}")
                     inconsistencia = [id, "Descrição da transação não condiz com os dados da transação. Verifique.", f"Transação: {transaction_type} - Conta de origem: {account_origin} - Conta de destino: {account_destination} - Descrição: {description}"]
                     inconsistencias_list.append(inconsistencia)
 
                 if f"para '{account_destination}'" not in description:
-                    print(f"Id: {id}; Conta de destino: {account_destination}; Descrição: {description}")
                     inconsistencia = [id, "Descrição da transação não condiz com os dados da transação. Verifique.", f"Transação: {transaction_type} - Conta de origem: {account_origin} - Conta de destino: {account_destination} - Descrição: {description}"]
                     inconsistencias_list.append(inconsistencia)
 
@@ -295,7 +285,7 @@ try:
                 except Exception as e:
                     print(f"Erro ao criar o nome do arquivo: {e}. Usando 'inconsistencias' como padrão.")
                     nome_arquivo = 'inconsistencias'
-                inconsistencias_df.to_excel(f'{nome_arquivo}.xlsx', index=False)
+                inconsistencias_df.to_excel(f'inconsistencias_{nome_arquivo}.xlsx', index=False)
                 print("Arquivo de inconsistências criado com sucesso! Favor verificar as inconsistências encontradas.")
                 sleep(2)
 
